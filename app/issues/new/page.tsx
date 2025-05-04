@@ -1,19 +1,22 @@
 "use client";
 import { z } from "zod";
 import axios from "axios";
+import { useState } from "react";
 import "easymde/dist/easymde.min.css";
 import { useRouter } from "next/navigation";
 import SimpleMDE from "react-simplemde-editor";
+import Spinner from "@/app/components/Spinner";
 import { TextField, Button } from "@radix-ui/themes";
 import { useForm, Controller } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { createIssueSchema } from "../../validationSchema";
 import ErrorMessage from "@/app/components/ErrorMessage";
+import { createIssueSchema } from "../../validationSchema";
 
 type IssueForm = z.infer<typeof createIssueSchema>;
 
 const NewIssuePage = () => {
   const route = useRouter();
+  const [isSubmitting, setIsSubmitting] = useState(false);
   const {
     control,
     register,
@@ -24,6 +27,7 @@ const NewIssuePage = () => {
   });
 
   const onSubmit = async (data: IssueForm) => {
+    setIsSubmitting(true);
     await axios
       .post("/api/issues", data)
       .then(() => {
@@ -32,6 +36,9 @@ const NewIssuePage = () => {
       })
       .catch(() => {
         alert("Failed to create issue. Please try again.");
+      })
+      .finally(() => {
+        setIsSubmitting(false);
       });
   };
 
@@ -59,10 +66,15 @@ const NewIssuePage = () => {
         rules={{ required: true }}
       />
       <ErrorMessage>{errors.description?.message}</ErrorMessage>
-      
+
       <div className="my-5">
-        <Button size={"3"} onClick={handleSubmit(onSubmit)}>
+        <Button
+          size={"3"}
+          disabled={isSubmitting}
+          onClick={handleSubmit(onSubmit)}
+        >
           Submit New Issue
+          {isSubmitting && <Spinner />}
         </Button>
       </div>
     </div>
