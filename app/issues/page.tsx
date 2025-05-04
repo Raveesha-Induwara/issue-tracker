@@ -4,6 +4,7 @@ import axios from "axios";
 import Link from "next/link";
 import { Issue } from "../generated/prisma";
 import { Button, Table, Text } from "@radix-ui/themes";
+import IssueStatusBadge from "../components/IssueStatusBadge";
 
 const IssuesPage = () => {
   const [issues, setIssues] = useState<Issue[]>([]);
@@ -55,10 +56,12 @@ const IssuesPage = () => {
                 <Table.Row key={issue.id}>
                   <Table.Cell>
                     {issue.title}{" "}
-                    <div className="block md:hidden">{issue.status}</div>
+                    <div className="block md:hidden">
+                      <IssueStatusBadge status={issue.status} />
+                    </div>
                   </Table.Cell>
                   <Table.Cell className="hidden md:table-cell">
-                    {issue.status}
+                    <IssueStatusBadge status={issue.status} />
                   </Table.Cell>
                   <Table.Cell className="hidden md:table-cell">
                     {issue.createdAt.toLocaleString()}
