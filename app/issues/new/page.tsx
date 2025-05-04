@@ -4,10 +4,11 @@ import axios from "axios";
 import "easymde/dist/easymde.min.css";
 import { useRouter } from "next/navigation";
 import SimpleMDE from "react-simplemde-editor";
+import { TextField, Button } from "@radix-ui/themes";
 import { useForm, Controller } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { createIssueSchema } from "../../validationSchema";
-import { TextField, Button, Text } from "@radix-ui/themes";
+import ErrorMessage from "@/app/components/ErrorMessage";
 
 type IssueForm = z.infer<typeof createIssueSchema>;
 
@@ -41,11 +42,7 @@ const NewIssuePage = () => {
         placeholder="Title"
         size={"3"}
       />
-      {errors.title && (
-        <Text color="red" as="p">
-          {errors.title.message}
-        </Text>
-      )}
+      <ErrorMessage>{errors.title?.message}</ErrorMessage>
 
       <Controller
         name="description"
@@ -61,13 +58,8 @@ const NewIssuePage = () => {
         )}
         rules={{ required: true }}
       />
-
-      {errors.description && (
-        <Text color="red" as="p">
-          {errors.description.message}
-        </Text>
-      )}
-
+      <ErrorMessage>{errors.description?.message}</ErrorMessage>
+      
       <div className="my-5">
         <Button size={"3"} onClick={handleSubmit(onSubmit)}>
           Submit New Issue
