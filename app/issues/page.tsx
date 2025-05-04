@@ -1,9 +1,9 @@
 import delay from "delay";
 import prisma from "@/prisma/client";
+import Link from "../components/Link";
 import { Table } from "@radix-ui/themes";
 import IssueActions from "./IssueActions";
 import IssueStatusBadge from "../components/IssueStatusBadge";
-import Link from "next/link";
 
 const IssuesPage = async () => {
   const issues = await prisma.issue.findMany({});
@@ -15,7 +15,7 @@ const IssuesPage = async () => {
       <div>
         <Table.Root variant="surface" className="w-full mt-4">
           <Table.Header>
-            <Table.Row>
+            <Table.Row className="text-base bg-violet-100">
               <Table.ColumnHeaderCell>Issue</Table.ColumnHeaderCell>
               <Table.ColumnHeaderCell className="hidden md:table-cell">
                 Status
@@ -29,7 +29,7 @@ const IssuesPage = async () => {
             <Table.Body>
               {issues.map((issue) => (
                 <Table.Row key={issue.id}>
-                  <Table.Cell>
+                  <Table.Cell className="text-base">
                     <Link href={`/issues/${issue.id}`}>{issue.title}</Link>
                     <div className="block md:hidden">
                       <IssueStatusBadge status={issue.status} />
@@ -38,8 +38,12 @@ const IssuesPage = async () => {
                   <Table.Cell className="hidden md:table-cell">
                     <IssueStatusBadge status={issue.status} />
                   </Table.Cell>
-                  <Table.Cell className="hidden md:table-cell">
-                    {issue.createdAt.toLocaleString()}
+                  <Table.Cell className="hidden md:table-cell text-base">
+                    {issue.createdAt.toLocaleDateString("en-us", {
+                      day: "2-digit",
+                      month: "long",
+                      year: "numeric",
+                    })}
                   </Table.Cell>
                 </Table.Row>
               ))}
