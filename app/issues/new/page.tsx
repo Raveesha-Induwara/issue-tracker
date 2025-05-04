@@ -1,15 +1,15 @@
 "use client";
+import { z } from "zod";
 import axios from "axios";
 import "easymde/dist/easymde.min.css";
 import { useRouter } from "next/navigation";
 import SimpleMDE from "react-simplemde-editor";
 import { useForm, Controller } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { createIssueSchema } from "../../validationSchema";
 import { TextField, Button, Text } from "@radix-ui/themes";
 
-interface IssueForm {
-  title: string;
-  description: string;
-}
+type IssueForm = z.infer<typeof createIssueSchema>;
 
 const NewIssuePage = () => {
   const route = useRouter();
@@ -18,7 +18,9 @@ const NewIssuePage = () => {
     register,
     handleSubmit,
     formState: { errors },
-  } = useForm<IssueForm>();
+  } = useForm<IssueForm>({
+    resolver: zodResolver(createIssueSchema),
+  });
 
   const onSubmit = async (data: IssueForm) => {
     await axios
@@ -40,9 +42,9 @@ const NewIssuePage = () => {
         size={"3"}
       />
       {errors.title && (
-        <div className="text-red-500 text-sm my-1">
-          <Text>This field is required</Text>
-        </div>
+        <Text color="red" as="p">
+          {errors.title.message}
+        </Text>
       )}
 
       <Controller
@@ -61,9 +63,9 @@ const NewIssuePage = () => {
       />
 
       {errors.description && (
-        <div className="text-red-500 text-sm my-1">
-          <Text>This field is required</Text>
-        </div>
+        <Text color="red" as="p">
+          {errors.description.message}
+        </Text>
       )}
 
       <div className="my-5">
