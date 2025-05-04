@@ -1,42 +1,16 @@
-"use client";
-import React, { useEffect, useState } from "react";
-import axios from "axios";
-import Link from "next/link";
-import { Issue } from "../generated/prisma";
-import { Button, Table, Text } from "@radix-ui/themes";
+import delay from "delay";
+import prisma from "@/prisma/client";
+import { Table } from "@radix-ui/themes";
+import IssueActions from "./IssueActions";
 import IssueStatusBadge from "../components/IssueStatusBadge";
 
-const IssuesPage = () => {
-  const [issues, setIssues] = useState<Issue[]>([]);
-  const [isLoading, setIsLoading] = useState(true);
+const IssuesPage = async () => {
+  const issues = await prisma.issue.findMany({});
+  await delay(2000);
 
-  useEffect(() => {
-    axios
-      .get("/api/issues")
-      .then((response) => {
-        setIssues(response.data);
-      })
-      .catch((error) => {
-        console.error("Error fetching issues:", error);
-      })
-      .finally(() => {
-        setIsLoading(false);
-      });
-  }, []);
-
-  if (isLoading) {
-    return (
-      <div className="flex h-screen items-center justify-center">
-        <Text>Loading...</Text>
-      </div>
-    );
-  }
   return (
     <div>
-      <Button size={"3"}>
-        <Link href={"/issues/new"}>New Issue</Link>
-      </Button>
-
+      <IssueActions />
       <div>
         <Table.Root variant="surface" className="w-full mt-4">
           <Table.Header>
